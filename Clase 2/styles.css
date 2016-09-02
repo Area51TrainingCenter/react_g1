@@ -3,7 +3,7 @@
 body,
 html,
 div.board,
-div#react-container {
+div#main {
     height: 100%;
     overflow: hidden;
 }
