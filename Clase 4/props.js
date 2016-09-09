@@ -1,27 +1,38 @@
 var Caja = React.createClass({
   getDefaultProps: function(){
     return {
-      colorIndex: -1
+      //myColorIndex: -1
     }
   },
   getInitialState: function(){
     return {
-      backgroundColor: "blue",
-      height: 200,
-      width: 200,
-      color: "white",
-      textAlign: "center"
+      estilo: {
+        backgroundColor: "blue",
+        height: 200,
+        width: 200,
+        color: "white",
+        textAlign: "center",
+      },
+      myColorIndex: -1
     }
   },
   actualizar: function(){
     console.log('actualizando')
+    console.log(this.props.myColorIndex)
+    //this.props.myColorIndex = 0;
+    //console.log(ci)
+    this.setState(
+      { myColorIndex: this.props.myColorIndex + 1 })
+    console.log('despues: ', this.props.myColorIndex)
+    console.log('despues: ', this.props.colores)
   },
   componentWillReceiveProps: function (sigProp) {
     console.log(sigProp)
+    
   },
   render: function () { 
     return (
-      <div style={this.state} onClick={this.actualizar}>Cajita actualizable</div>
+      <div style={this.state.estilo} onClick={this.actualizar}>Cajita actualizable</div>
     )
   }
 });
