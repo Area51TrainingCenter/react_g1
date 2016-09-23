@@ -7,9 +7,11 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  View
+    ListView,
+    StyleSheet,
+    Text,
+    View,
+    TouchableHighlight
 } from 'react-native';
 
 import * as firebase from 'firebase';
@@ -18,64 +20,86 @@ const ActionButton = require('./components/ActionButton');
 const ListItem = require('./components/ListItem');
 const styles = require('./styles.js');
 
-class myTodoApp extends Component {
-  constructor(props) {
-    super(props);
 
-    componentDidMount() {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows([
-            { title: 'Pizza' }])
-        })
-      }
-
-    this.state = {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      })
-    };
-  }
-
-  _renderItem(item) {
-    return (
-      <ListItem item="{item}" onpress="{()" ==""> {}} />
-    );
-  }
-
-  render() {
-    return (
-      <View style="{styles.container}">
-
-        <StatusBar title="Mis pendientes">
-
-        <ListView datasource="{this.state.dataSource}" 
-        renderRow="{this._renderItem.bind(this)}" 
-        style="{styles.listview}/">
-
-        <ActionButton title="Add" onpress="{()" ==""> {}} />
-
-      </View>
-    );
-  }
+const firebaseConfig = {
+      apiKey: "AIzaSyBDMtpbfUgLlusx5CUaEB8dwmXVtuJwyo0",
+      authDomain: "mytodoapp-yfx.firebaseapp.com",
+      databaseURL: "https://mytodoapp-yfx.firebaseio.com",
+      storageBucket: "mytodoapp-yfx.appspot.com",
+      messagingSenderId: "91888442793" 
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+
+class myTodoApp extends Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+        dataSource: new ListView.DataSource({
+          rowHasChanged: (row1, row2) => row1 !== row2,
+        })
+      };
+      this.itemsRef = firebaseApp.database().ref();
+    }
+
+    getRef() {
+      return firebaseApp.database().ref();
+    }
+
+    listenForItems(itemsRef) {
+
+      console.log('Entra????', itemsRef)
+
+      itemsRef.on('value', (snap) => {
+        console.log('??')
+        // get children as an array
+        var items = [];
+        snap.forEach((child) => {
+          console.log('??')
+          items.push({
+            title: child.val().title,
+            _key: child.key
+          });
+        });
+
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(items)
+        });
+
+      });
+    }
+
+    componentDidMount() {
+      //console.log('invoca?', this.itemsRef)
+      this.listenForItems(this.itemsRef);
+    }
+
+    render() {
+      return (
+        <View style={styles.container}>
+
+          <StatusBar title="Mis pendientes" />
+
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={this._renderItem.bind(this)}
+            enableEmptySections={true}
+            style={styles.listview}/>
+
+          <ActionButton title="Agregar + " />
+
+        </View>
+      )
+    }
+    _renderItem(item) {
+
+       
+
+       return (
+         <ListItem item={item} onPress={onPress} />
+       );
+     }
+}
 
 AppRegistry.registerComponent('myTodoApp', () => myTodoApp);
